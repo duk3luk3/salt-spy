@@ -23,8 +23,14 @@ def minions():
             runs=[
                 dict(id=r.run_id, user=r.user, ret_time=r.ret_time, sls=r.sls(), test=r.is_test,
                     states=[
-                        dict(id=s.state_id,run_num=s.run_num, sls=s.sls, function=s.function, result=s.result, name=s.name)
+                        dict(id=s.state_id,run_num=s.run_num, sls=s.sls, function=s.function, result=s.result, name=s.name, comment=s.comment)
                         for s in r.states])
                 for r in m.runs])
         for m in minions]
     return render_template('minions.html', minions=minions[:1])
+
+@app.route('/run/detail/<int:run_id>')
+def run_details(run_id):
+    db = get_db()
+    run = db.query(StateRun).filter(StateRun.run_id == run_id).one()
+    return render_template('run_detail.html', run=run)

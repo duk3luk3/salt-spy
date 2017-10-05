@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Run Details{% endblock %}
+{% block content %}
+      <div>
+        <h2>Run Detail for State Run #{{run.run_id}}</h2>
+
+        <div class="row"><div class="col-md-2">Run on</div><div class="col-md-10">{{run.minion.name}}</div></div>
+        <div class="row"><div class="col-md-2">Run by</div><div class="col-md-10">{{run.user}}</div></div>
+        <div class="row"><div class="col-md-2">Run at</div><div class="col-md-10">{{run.ret_time}}</div></div>
+        <div class="row mb-2"><div class="col-md-2">SLS</div><div class="col-md-10">{{run.sls()|join(', ')}}</div></div>
+
+        <h2>States</h2>
+        {% for state in run.states|sort(attribute='run_num') %}
+        <h3>{{state.function}}: {{state.name}}</h3>
+        <div class="row"><div class="col-md-2">SLS</div><div class="col-md-10">{{state.sls}}</div></div>
+        <div class="row"><div class="col-md-2">Result</div><div class="col-md-10">{{state.result}}</div></div>
+        <div class="row"><div class="col-md-2">Comment</div><div class="col-md-10">{{state.comment}}</div></div>
+        {% for k, v in state.render_changes().items() %}
+        <div class="row">
+          <div class="col-md-2">{% if loop.index0 == 0 %}Changes{% endif %}</div>
+          <div class="col-md-2">{{k}}:</div><div class="col-md-8">{{v}}</div>
+        </div>
+        {% endfor %}
+
+
+
+        {% endfor %}
+      </div>
+{% endblock %}

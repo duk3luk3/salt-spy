@@ -1,6 +1,7 @@
 from sqlalchemy import Column, Integer, Float, String, DateTime, Time, Boolean, ForeignKey
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
+import json
 
 Base = declarative_base()
 
@@ -9,6 +10,7 @@ class Minion(Base):
 
     minion_id = Column(Integer, primary_key=True)
     name = Column(String)
+    #runs from StateRun
 
 class StateRun(Base):
     __tablename__ = 'run'
@@ -20,6 +22,7 @@ class StateRun(Base):
     user = Column(String)
 
     minion = relationship('Minion', backref='runs')
+    #states from StateExecution
 
     def sls(self):
         ret = []
@@ -45,4 +48,9 @@ class StateExecution(Base):
     result = Column(Boolean(create_constraint=True))
 
     run = relationship('StateRun', backref='states')
+
+    def render_changes(self):
+        changes = json.loads(self.changes)
+
+        return changes
 
