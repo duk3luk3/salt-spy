@@ -36,7 +36,7 @@
             <a class="nav-link" href="{{ url_for('states')}}">States</a>
           </li>
           <li class="nav-item{% if nav == 'health' %} active{% endif %}">
-            <a class="nav-link" href="/health">Health {{ '[' + num_alerts + ' Alerts]' if num_alerts is defined else '[0 Alerts]' }}</a>
+            <a class="nav-link" href="{{ url_for('health')}}">Health {{ '[' + num_alerts + ' Alerts]' if num_alerts is defined else '[0 Alerts]' }}</a>
           </li>
         </ul>
         <form class="form-inline my-2 my-lg-0">

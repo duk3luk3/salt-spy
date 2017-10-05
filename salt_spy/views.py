@@ -1,4 +1,4 @@
-from flask import Flask, render_template, g
+from flask import Flask, render_template, redirect, url_for, g
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from . import app, data, config
@@ -35,11 +35,11 @@ def minions():
 
 @app.route('/states')
 def states():
-    pass
+    return redirect(url_for('minions'))
 
 @app.route('/health')
 def health():
-    pass
+    return redirect(url_for('minions'))
 
 
 
