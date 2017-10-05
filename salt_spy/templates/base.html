@@ -26,17 +26,17 @@
 
       <div class="collapse navbar-collapse" id="navbarsExampleDefault">
         <ul class="navbar-nav mr-auto">
-          <li class="nav-item active">
-            <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+          <li class="nav-item{% if nav == 'home' %} active{% endif %}">
+            <a class="nav-link" href="/">Home<span class="sr-only">(current)</span></a>
           </li>
-          <li class="nav-item">
+          <li class="nav-item{% if nav == 'minions' %} active{% endif %}">
             <a class="nav-link" href="{{ url_for('minions') }}">Minions</a>
           </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">States</a>
+          <li class="nav-item{% if nav == 'states' %} active{% endif %}">
+            <a class="nav-link" href="{{ url_for('states')}}">States</a>
           </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">Alerts {{ num_alerts if num_alerts is defined else '[0]' }}</a>
+          <li class="nav-item{% if nav == 'health' %} active{% endif %}">
+            <a class="nav-link" href="/health">Health {{ '[' + num_alerts + ' Alerts]' if num_alerts is defined else '[0 Alerts]' }}</a>
           </li>
         </ul>
         <form class="form-inline my-2 my-lg-0">

@@ -9,7 +9,3 @@ def close_db(error):
     if hasattr(g, 'sqlite_db'):
         g.sqlite_db.conn.close()
 
-
-@app.route('/')
-def hello_world():
-    return render_template('hello.html')
