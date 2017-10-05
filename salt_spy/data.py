@@ -34,7 +34,7 @@ class Data:
         else:
             query = "SELECT * from minion"
             result = cursor.execute(query)
-        return [Minion(minion_id, minion_name) for minion_id, minion_name in result]
+        return [Minion(minion_id=minion_id, name=minion_name) for minion_id, minion_name in result]
 
     def insert_minion(self, minion_name):
         cursor = self.conn.cursor()
