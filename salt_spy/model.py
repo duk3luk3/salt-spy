@@ -21,6 +21,13 @@ class StateRun(Base):
 
     minion = relationship('Minion', backref='runs')
 
+    def sls(self):
+        ret = []
+        for state in self.states:
+            if not state.sls in ret:
+                ret.append(state.sls)
+        return ret
+
 class StateExecution(Base):
     __tablename__ = 'state'
 

@@ -19,9 +19,9 @@ def minions():
     db = get_db()
     minions = db.query(Minion)
     minions=[
-        dict(name=m.name, 
+        dict(name=m.name,
             runs=[
-                dict(id=r.run_id, user=r.user, ret_time=r.ret_time,
+                dict(id=r.run_id, user=r.user, ret_time=r.ret_time, sls=r.sls(), test=r.is_test,
                     states=[
                         dict(id=s.state_id,run_num=s.run_num, sls=s.sls, function=s.function, result=s.result, name=s.name)
                         for s in r.states])
