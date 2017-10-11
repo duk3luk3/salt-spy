@@ -1,56 +1,97 @@
-from sqlalchemy import Column, Integer, Float, String, DateTime, Time, Boolean, ForeignKey
+from sqlalchemy import Column, Integer, Float, String, DateTime, Time, Boolean, ForeignKey, JSON
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
 import json
 
 Base = declarative_base()
 
-class Minion(Base):
-    __tablename__ = 'minion'
+class Return(Base):
+    __tablename__ = 'salt_returns'
 
-    minion_id = Column(Integer, primary_key=True)
-    name = Column(String)
-    #runs from StateRun
+    fun = Column(String)
+    jid = Column(String, ForeignKey('jids.jid'))
+    mid = Column('id', String)
+    fun_args = Column(String)
+    date = Column(String)
+    full_ret = Column(String)
+    success = Column(String)
+    rid = Column(Integer, primary_key=True)
 
-class StateRun(Base):
-    __tablename__ = 'run'
 
-    run_id = Column(Integer, primary_key=True)
-    minion_id = Column(Integer, ForeignKey('minion.minion_id'))
-    ret_time = Column(DateTime)
-    is_test = Column(Boolean(create_constraint=True))
-    user = Column(String)
+    def full_ret_obj(self):
+        if not hasattr(self, '_full_ret_obj'):
+            self._full_ret_obj = json.loads(self.full_ret)
+        return self._full_ret_obj
 
-    minion = relationship('Minion', backref='runs')
-    #states from StateExecution
+    def fun(self):
+        return self.full_ret_obj()['fun']
+
+    def ret(self):
+        return self.full_ret_obj().get('return')
+
+    def is_test(self):
+        return 'test=True' in self.full_ret_obj()['fun_args']
+
+    def is_state(self):
+        return self.fun().startswith('state.')
+
+    def user(self):
+        return self.job.load_obj().get('user')
 
     def sls(self):
-        ret = []
-        for state in self.states:
-            if not state.sls in ret:
-                ret.append(state.sls)
-        return ret
+        if self.is_state():
+            return [state['__sls__'] for state in self.ret().values()]
+        else:
+            return None
 
-class StateExecution(Base):
-    __tablename__ = 'state'
+    def _decode_state(self, state):
+        key, val = state
+        function_comps = key.split('_|-')
+        function = function_comps[0] + '.' + function_comps[-1]
 
-    state_id = Column(Integer, primary_key=True)
-    run_id = Column(Integer, ForeignKey('run.run_id'))
-    function = Column(String)
-    salt_id = Column('__id__', String)
-    sls = Column('__sls__', String)
-    run_num = Column('__run_num__', Integer)
-    comment = Column(String)
-    changes = Column(String)
-    name = Column(String)
-    start_time = Column(Time)
-    duration = Column(Float)
-    result = Column(Boolean(create_constraint=True))
+        return {
+            'function': function,
+            'name': val['name'],
+            'sls': val['__sls__'],
+            'result': val['result'],
+            'comment': val['comment']
+            }
 
-    run = relationship('StateRun', backref='states')
 
-    def render_changes(self):
-        changes = json.loads(self.changes)
+    def states(self):
+        if self.is_state():
+            return [self._decode_state(state) for state in self.ret().items()]
+        else:
+            return None
 
-        return changes
+class Job(Base):
+    __tablename__ = 'jids'
+
+    jid = Column(String, primary_key=True)
+    load = Column(String)
+
+    returns = relationship("Return", backref='job')
+
+    def load_obj(self):
+        if not hasattr(self, '_load_obj'):
+            self._load_obj = json.loads(self.load)
+        return self._load_obj
+
+class Minion:
+    def __init__(self, mid, returns):
+        self.mid = mid
+        self.returns = returns
+
+    @staticmethod
+    def from_returns(returns):
+        minions = {}
+
+        for r in returns:
+            mid = r.mid
+            if not mid in minions:
+                minions[mid] = Minion(mid, [])
+            minions[mid].returns.append(r)
+
+        return minions
+
 

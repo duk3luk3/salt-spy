@@ -3,44 +3,22 @@
 {% block content %}
       <div>
         <h2>Minions Overview</h2>
+          There are {{minions|count}} minions.
           {% for minion in minions%}
           <div class="row">
             <div class="col-md-12">
-              <div class="row">{{minion.name|safe}}</div>
+              <div class="row">ID: {{minion.mid}}</div>
               <div class="row">
                 <div class="col"><strong>User</strong></div>
-                <div class="col"><strong>SLS</strong></div>
+                <div class="col"><strong>SLS / Function</strong></div>
                 <div class="col"><strong>Started at</strong></div>
               </div>
-              {% for run in minion.runs %}
-              <div class="row border{% if run.test %} text-muted{% endif %}">
-                <div class="col-md-12">
-                  <div class="row">
-                    <div class="col">{{run.user}}</div>
-                    <div class="col">{{run.sls|join(', ')}}{% if run.test %} (Test){% endif %}</div>
-                    <div class="col"><a data-toggle="collapse" href="#{{run.id}}-collapse">{{run.ret_time}}</a></div>
-                  </div>
-                  <div class="row collapse mb-1 pl-4" id="{{run.id}}-collapse">
-                    <a href="{{ url_for('run_details', run_id=run.id) }}">Details</a>
-                    <div class="col-md-12">
-                      <div class="row">
-                        <div class="col-md-2"><strong>Function</strong></div>
-                        <div class="col-md-2"><strong>Name</strong></div>
-                        <div class="col-md-2"><strong>SLS</strong></div>
-                        <div class="col-md-6"><strong>Result (Comment)</strong></div>
-                      </div>
-                    {% for state in run.states %}
-                      <div class="row">
-                        <div class="col-md-2">{{state.function}}</div>
-                        <div class="col-md-2">{{state.name}}</div>
-                        <div class="col-md-2">{{state.sls}}</div>
-                        <div class="col-md-6">{{state.result}} ({{ state.comment }})</div>
-                      </div>
-                    {% endfor %}
-                    </div>
-                  </div>
-                </div>
-              </div>
+              {% for return in minion.returns %}
+              {% if return.is_state() %}
+              {% include "render_state.html" %}
+              {% else %}
+              {% include "render_func.html" %}
+              {% endif %}
               {% endfor %}
             </div>
           </div>
