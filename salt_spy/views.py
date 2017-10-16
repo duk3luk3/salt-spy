@@ -1,39 +1,39 @@
 from flask import Flask, render_template, redirect, url_for, g
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-from . import app, data, config
+from natsort import natsorted
+#from sqlalchemy import create_engine
+#from sqlalchemy.orm import sessionmaker
+from . import app, data, config, db
 from .model import Job, Return, Minion
 import sys
 
-def get_db():
-    """Opens a new database connection if there is none yet for the
-    current application context.
-    """
-    if not hasattr(g, 'engine'):
-        db_file = config.config.DB
-        g.engine = create_engine('sqlite:///' + db_file)
-        g.Session = sessionmaker(bind=g.engine)
-    return g.Session()
 
 @app.route('/')
-def hello_world():
-    return render_template('hello.html', nav='home')
+def dashboard():
+    returns = db.session.query(Return).filter_by(fun = 'state.apply').all()
+    minions = Minion.from_returns(returns)
+
+    minions_sorted = sorted(minions.values(), key=lambda m: m.apply_age())
+
+    return render_template('hello.html', minions=minions_sorted, nav='dashboard')
 
 @app.route('/minions')
 def minions():
-    db = get_db()
-    returns = db.query(Return).all()
-
-    print(returns, file=sys.stderr)
-
+    returns = db.session.query(Return).all()
     minions = Minion.from_returns(returns)
 
+    minions_sorted = natsorted(minions.values(), key=lambda m: m.mid)
+
     print(len(minions), file=sys.stderr)
-    return render_template('minions.html', minions=minions.values(), nav='minions')
+    return render_template('minions.html', minions=minions_sorted, nav='minions')
 
 @app.route('/states')
 def states():
-    return redirect(url_for('minions'))
+    states = db.session.query(Return).order_by(Return.date.desc()).all()
+
+    return render_template('states.html', states=states, nav='states')
+
+
+
 
 @app.route('/health')
 def health():

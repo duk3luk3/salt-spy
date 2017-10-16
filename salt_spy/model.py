@@ -2,6 +2,7 @@ from sqlalchemy import Column, Integer, Float, String, DateTime, Time, Boolean, 
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
 import json
+from datetime import datetime
 
 Base = declarative_base()
 
@@ -23,7 +24,7 @@ class Return(Base):
             self._full_ret_obj = json.loads(self.full_ret)
         return self._full_ret_obj
 
-    def fun(self):
+    def ret_fun(self):
         return self.full_ret_obj()['fun']
 
     def ret(self):
@@ -32,15 +33,23 @@ class Return(Base):
     def is_test(self):
         return 'test=True' in self.full_ret_obj()['fun_args']
 
+    def is_error(self):
+        return '_error' in self.full_ret_obj()
+
     def is_state(self):
-        return self.fun().startswith('state.')
+        return not self.is_error() and self.fun.startswith('state.')
 
     def user(self):
         return self.job.load_obj().get('user')
 
     def sls(self):
         if self.is_state():
-            return [state['__sls__'] for state in self.ret().values()]
+            ret = []
+            for state in self.ret().values():
+                sls = state['__sls__']
+                if not sls in ret:
+                    ret.append(sls)
+            return ret
         else:
             return None
 
@@ -51,7 +60,7 @@ class Return(Base):
 
         return {
             'function': function,
-            'name': val['name'],
+            'name': val.get('name', function_comps[1]),
             'sls': val['__sls__'],
             'result': val['result'],
             'comment': val['comment']
@@ -82,6 +91,22 @@ class Minion:
         self.mid = mid
         self.returns = returns
 
+    def apply_age(self):
+        if not hasattr(self, '_apply_age'):
+            last_apply = None
+            for r in reversed(self.returns):
+                if r.fun == 'state.apply':
+                    last_apply = r
+                    break
+            if last_apply:
+                # 2017-10-13 02:49:04.513147
+                apply_time = datetime.strptime(r.date, '%Y-%m-%d %H:%M:%S.%f')
+                apply_age = datetime.now() - apply_time
+                self._apply_age = apply_age.days
+            else:
+                self._apply_age = None
+        return self._apply_age
+
     @staticmethod
     def from_returns(returns):
         minions = {}
@@ -91,6 +116,9 @@ class Minion:
             if not mid in minions:
                 minions[mid] = Minion(mid, [])
             minions[mid].returns.append(r)
+
+        for m in minions.values():
+            m.returns.sort(key=lambda r: r.date)
 
         return minions
 

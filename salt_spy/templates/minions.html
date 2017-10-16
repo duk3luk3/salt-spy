@@ -5,13 +5,13 @@
         <h2>Minions Overview</h2>
           There are {{minions|count}} minions.
           {% for minion in minions%}
-          <div class="row">
+          <div class="row border p-2 mb-1">
             <div class="col-md-12">
-              <div class="row">ID: {{minion.mid}}</div>
+              <div class="row">{{minion.mid}}</div>
               <div class="row">
-                <div class="col"><strong>User</strong></div>
-                <div class="col"><strong>SLS / Function</strong></div>
-                <div class="col"><strong>Started at</strong></div>
+                <div class="col-md-2"><strong>User</strong></div>
+                <div class="col-md-2"><strong>SLS / Function</strong></div>
+                <div class="col-md-2"><strong>Started at</strong></div>
               </div>
               {% for return in minion.returns %}
               {% if return.is_state() %}

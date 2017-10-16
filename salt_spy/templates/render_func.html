@@ -1,13 +1,13 @@
 {## renders a non-state return ##}
               {% set full_ret = return.full_ret_obj() %}
-              {% set fun = return.fun() %}
+              {% set fun = return.fun %}
               {% set ret = return.ret() %}
               <div class="row border">
                 <div class="col-md-12">
                   <div class="row{% if not return.is_state() or return.is_test() %} text-muted{% endif %}">
-                    <div class="col">{{return.user()}}</div>
-                    <div class="col">{{ fun }}</div>
-                    <div class="col"><a data-toggle="collapse" href="#{{return.rid}}-collapse">{{return.date}}</a></div>
+                    <div class="col-md-2">{{return.user()}}</div>
+                    <div class="col-md-2">{{ fun }}</div>
+                    <div class="col-md-2"><a data-toggle="collapse" href="#{{return.rid}}-collapse">{{return.date}}</a></div>
                   </div>
                   <div class="row collapse mb-1 pl-4" id="{{return.rid}}-collapse">
                     <a href="{{ url_for('run_details', run_id=return.rid) }}">Details</a>

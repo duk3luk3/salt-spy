@@ -18,23 +18,23 @@
 
   <body>
 
+{% macro r_nav(tgt, text) -%}{% set is_current = nav == tgt %}
+          <li class="nav-item{% if is_current %} active{% endif %}">
+            <a class="nav-link" href="{{ url_for(tgt) }}">{{text}}{% if is_current %}<span class="sr-only">(current)</span>{% endif %}</a>
+          </li>
+{%- endmacro %}
+
     <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
-      <a class="navbar-brand" href="#">Navbar</a>
+      <a class="navbar-brand" href="{{url_for('dashboard')}}">Salt-Spy</a>
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
 
       <div class="collapse navbar-collapse" id="navbarsExampleDefault">
         <ul class="navbar-nav mr-auto">
-          <li class="nav-item{% if nav == 'home' %} active{% endif %}">
-            <a class="nav-link" href="{{ url_for('hello_world') }}">Home<span class="sr-only">(current)</span></a>
-          </li>
-          <li class="nav-item{% if nav == 'minions' %} active{% endif %}">
-            <a class="nav-link" href="{{ url_for('minions') }}">Minions</a>
-          </li>
-          <li class="nav-item{% if nav == 'states' %} active{% endif %}">
-            <a class="nav-link" href="{{ url_for('states')}}">States</a>
-          </li>
+          {{ r_nav('dashboard', 'Home') }}
+          {{ r_nav('minions', 'Minions') }}
+          {{ r_nav('states', 'States') }}
           <li class="nav-item{% if nav == 'health' %} active{% endif %}">
             <a class="nav-link" href="{{ url_for('health')}}">Health {{ '[' + num_alerts + ' Alerts]' if num_alerts is defined else '[0 Alerts]' }}</a>
           </li>
@@ -46,7 +46,7 @@
       </div>
     </nav>
 
-    <div class="container">
+    <div class="container-fluid">
 	{% block content %}
 	{% endblock %}
     </div><!-- /.container -->

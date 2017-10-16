@@ -1,8 +1,17 @@
 {% extends "base.html" %}
-{% block title %}The Title{% endblock %}
+{% block title %}Salt-Spy{% endblock %}
 {% block content %}
       <div class="starter-template">
         <h1>Salt-Spy Dashboard</h1>
-        <p class="lead">This is where the Dashboard will be, coming soon...</p>
+          <div class="row border p-2 mb-1">
+            <div class="col-md-3"><strong>Minion</strong></div>
+            <div class="col-md-3"><strong>Last apply</strong></div>
+          </div>
+          {% for minion in minions%}
+          <div class="row border p-2 mb-1">
+            <div class="col-md-3">{{minion.mid}}</div>
+            <div class="col-md-3">{{minion.apply_age()}} days</div>
+          </div>
+          {% endfor %}
       </div>
 {% endblock %}

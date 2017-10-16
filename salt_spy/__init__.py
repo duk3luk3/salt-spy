@@ -1,11 +1,11 @@
 from flask import Flask, render_template, g
+from flask_sqlalchemy import SQLAlchemy
+from . import config
+
 app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + config.config.DB
+db = SQLAlchemy(app)
 
-from . import views, data, config
+from . import views, data
 
-@app.teardown_appcontext
-def close_db(error):
-    """Closes the database again at the end of the request."""
-    if hasattr(g, 'sqlite_db'):
-        g.sqlite_db.conn.close()
 
