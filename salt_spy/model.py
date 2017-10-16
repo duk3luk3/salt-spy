@@ -34,7 +34,7 @@ class Return(Base):
         return 'test=True' in self.full_ret_obj()['fun_args']
 
     def is_error(self):
-        return '_error' in self.full_ret_obj()
+        return '_error' in self.full_ret_obj() or isinstance(self.full_ret_obj()['return'], str) or isinstance(self.full_ret_obj()['return'], list)
 
     def is_state(self):
         return not self.is_error() and self.fun.startswith('state.')
@@ -46,8 +46,8 @@ class Return(Base):
         if self.is_state():
             ret = []
             for state in self.ret().values():
-                sls = state['__sls__']
-                if not sls in ret:
+                sls = state.get('__sls__')
+                if sls and not sls in ret:
                     ret.append(sls)
             return ret
         else:
@@ -61,7 +61,7 @@ class Return(Base):
         return {
             'function': function,
             'name': val.get('name', function_comps[1]),
-            'sls': val['__sls__'],
+            'sls': val.get('__sls__'),
             'result': val['result'],
             'comment': val['comment']
             }
