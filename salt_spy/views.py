@@ -9,7 +9,7 @@ import sys
 
 @app.route('/')
 def dashboard():
-    returns = db.session.query(Return).filter_by(fun = 'state.apply').all()
+    returns = db.session.query(Return).filter(Return.fun.in_(['state.apply', 'state.highstate'])).all()
     minions = Minion.from_returns(returns)
 
     minions_sorted = sorted(minions.values(), key=lambda m: m.apply_age())
@@ -32,13 +32,9 @@ def states():
 
     return render_template('states.html', states=states, nav='states')
 
-
-
-
 @app.route('/health')
 def health():
     return redirect(url_for('minions'))
-
 
 
 @app.route('/run/detail/<int:run_id>')

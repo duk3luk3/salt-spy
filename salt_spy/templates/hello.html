@@ -4,14 +4,21 @@
       <div class="starter-template">
         <h1>Salt-Spy Dashboard</h1>
           <div class="row border p-2 mb-1">
-            <div class="col-md-3"><strong>Minion</strong></div>
+            <div class="col-md-2"><strong>Minion</strong></div>
+            <div class="col-md-1"><strong>Job</strong></div>
             <div class="col-md-3"><strong>Last apply</strong></div>
+            <div class="col-md-3"><strong>JID</strong></div>
           </div>
           {% for minion in minions%}
-          <div class="row border p-2 mb-1">
-            <div class="col-md-3">{{minion.mid}}</div>
-            <div class="col-md-3">{{minion.apply_age()}} days</div>
+          {% set last_apply = minion.last_apply() %}
+          {% set age = minion.apply_age() %}
+          {% set apply_color = ' bg-danger' if age > 30 else ' bg-warning' if age > 14 else '' %}
+          <div class="row border p-2 mb-1{% if not last_apply or last_apply.is_test() %} text-muted{% endif %}">
+            <div class="col-md-2">{{minion.mid}}</div>
+            <div class="col-md-1"><a href="{{ url_for('states')}}#state-{{last_apply.rid}}">Job {{last_apply.rid}}</a></div>
+            <div class="col-md-3{{apply_color}}">{{age}} days</div>
+            <div class="col-md-3">{{last_apply.job.jid }}</div>
           </div>
           {% endfor %}
       </div>
-{% endblock %}
+ {% endblock %}

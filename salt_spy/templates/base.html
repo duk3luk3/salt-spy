@@ -62,5 +62,18 @@
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
     <script src="/static/ie10-viewport-bug-workaround.js"></script>
   
+<script type="text/javascript">
+function scrollhash() {
+  var hash = location.hash;
+  if (hash) {
+    $('html, body').scrollTop($(hash).offset().top - 56);
+    var collapser = $(hash)[0].attributes.href.value;
+    $(collapser).collapse('show');
+  }
+}
+$(function() {
+  scrollhash();
+});
+</script>
 
 </body></html>

@@ -4,6 +4,7 @@
       <div>
         <h2>States List</h2>
             <div class="row">
+              <div class="col-md-1"><strong>id</strong></div>
               <div class="col-md-2"><strong>fun</strong></div>
               <div class="col-md-2"><strong>mid</strong></div>
               <div class="col-md-2"><strong>jid</strong></div>
@@ -11,13 +12,34 @@
             </div>
             {% for state in states %}
             <div class="row">
-              <div class="col-md-2"><a data-toggle="collapse" href="#{{state.rid}}-collapse">{{state.fun}}</a></div>
+              <div class="col-md-1"><a data-toggle="collapse" href="#{{state.rid}}-collapse" id="state-{{state.rid}}">{{state.rid}}</a></div>
+              <div class="col-md-2">{{state.fun}}</div>
               <div class="col-md-2">{{state.mid}}</div>
               <div class="col-md-2">{{state.jid}}</div>
               <div class="col-md-2">{{state.date}}</div>
             </div>
             <div class="row collapse mt-1 mb-1 pl-1" id="{{state.rid}}-collapse">
               <div class="col-md-12">
+                <div class="row">
+                  <div class="col-md-2">
+                  Job
+                  </div>
+                  <div class="col-md-8">
+                  <ul>
+                  {% for k,value in state.job.load_obj().items() recursive %}
+                  <li>{{k}}
+                    {%if value is mapping %}
+                    <ul>{{ loop(value.items())}}</ul>
+                    {% elif value is iterable and not value is string %}
+                    : {{value|join(', ')}}
+                    {% elif value %}
+                    : {{value}}
+                    {%endif%}
+                  </li>
+                  {% endfor %}
+                  </ul>
+                  </div>
+                </div>
                 <div class="row">
                   <div class="col-md-2">
                   Arguments

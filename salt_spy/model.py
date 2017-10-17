@@ -18,6 +18,21 @@ class Return(Base):
     success = Column(String)
     rid = Column(Integer, primary_key=True)
 
+    def job_args(self):
+        load = self.job.load_obj()
+
+        args = load.get('arg', [])
+
+        nargs = []
+        kwargs = []
+
+        for arg in args:
+            if '=' in arg:
+                kwargs.append(arg)
+            else:
+                nargs.append(arg)
+
+        return nargs, kwargs
 
     def full_ret_obj(self):
         if not hasattr(self, '_full_ret_obj'):
@@ -38,6 +53,18 @@ class Return(Base):
 
     def is_state(self):
         return not self.is_error() and self.fun.startswith('state.')
+
+    def is_high(self):
+        if self.fun == 'state.highstate':
+            return True
+
+        if self.fun == 'state.apply':
+            nargs, kwargs = self.job_args()
+            if len(nargs) > 0:
+                return False
+            else:
+                return True
+
 
     def user(self):
         return self.job.load_obj().get('user')
@@ -91,20 +118,31 @@ class Minion:
         self.mid = mid
         self.returns = returns
 
-    def apply_age(self):
-        if not hasattr(self, '_apply_age'):
-            last_apply = None
+    def highstates(self):
+        if not hasattr(self,'_highstates'):
+            self._highstates = []
             for r in reversed(self.returns):
-                if r.fun == 'state.apply':
-                    last_apply = r
-                    break
-            if last_apply:
-                # 2017-10-13 02:49:04.513147
-                apply_time = datetime.strptime(r.date, '%Y-%m-%d %H:%M:%S.%f')
-                apply_age = datetime.now() - apply_time
-                self._apply_age = apply_age.days
-            else:
-                self._apply_age = None
+                if r.is_high() and not r.is_test():
+                    self._highstates.append(r)
+        return self._highstates
+
+
+    def last_apply(self):
+        highstates = self.highstates()
+        if highstates:
+            return highstates[0]
+        else:
+            return None
+
+    def apply_age(self):
+        last_apply = self.last_apply()
+        if last_apply:
+            # 2017-10-13 02:49:04.513147
+            apply_time = datetime.strptime(last_apply.date, '%Y-%m-%d %H:%M:%S.%f')
+            apply_age = datetime.now() - apply_time
+            self._apply_age = apply_age.days
+        else:
+            self._apply_age = None
         return self._apply_age
 
     @staticmethod
