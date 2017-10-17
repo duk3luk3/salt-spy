@@ -1,5 +1,23 @@
 {% extends "base.html" %}
 {% block title %}States List{% endblock %}
+{% macro state_meta(state) %}
+{% set success = state.is_success() %}
+{% set test = state.is_test() %}
+<span{{ ' class=text-danger' if success==False else '' }}>
+({{'Successful' if success == True else 'Failed' if success == False else 'Unknown'}}{{' Test' if test else ''}})
+</span>
+{% endmacro %}
+{% macro state_header(state) %}
+{% set success = state.is_success() %}
+{% set test = state.is_test() %}
+            <div class="row{{ ' text-muted' if test else ''}}">
+              <div class="col-md-1"><a data-toggle="collapse" href="#{{state.rid}}-collapse" id="state-{{state.rid}}">{{state.rid}}</a></div>
+              <div class="col-md-2">{{state.fun}} {{ state_meta(state) }}</div>
+              <div class="col-md-2">{{state.mid}}</div>
+              <div class="col-md-2">{{state.jid}}</div>
+              <div class="col-md-2">{{state.date}}</div>
+            </div>
+{% endmacro %}
 {% block content %}
       <div>
         <h2>States List</h2>
@@ -11,13 +29,7 @@
               <div class="col-md-2"><strong>date</strong></div>
             </div>
             {% for state in states %}
-            <div class="row">
-              <div class="col-md-1"><a data-toggle="collapse" href="#{{state.rid}}-collapse" id="state-{{state.rid}}">{{state.rid}}</a></div>
-              <div class="col-md-2">{{state.fun}}</div>
-              <div class="col-md-2">{{state.mid}}</div>
-              <div class="col-md-2">{{state.jid}}</div>
-              <div class="col-md-2">{{state.date}}</div>
-            </div>
+              {{ state_header(state) }}
             <div class="row collapse mt-1 mb-1 pl-1" id="{{state.rid}}-collapse">
               <div class="col-md-12">
                 <div class="row">
@@ -32,7 +44,7 @@
                     <ul>{{ loop(value.items())}}</ul>
                     {% elif value is iterable and not value is string %}
                     : {{value|join(', ')}}
-                    {% elif value %}
+                    {% else %}
                     : {{value}}
                     {%endif%}
                   </li>
@@ -64,7 +76,7 @@
                     <ul>{{ loop(value.items())}}</ul>
                     {% elif value is iterable and not value is string %}
                     : {{value|join(', ')}}
-                    {% elif value %}
+                    {% else %}
                     : {{value}}
                     {%endif%}
                   </li>

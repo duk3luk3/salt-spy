@@ -46,7 +46,8 @@ class Return(Base):
         return self.full_ret_obj().get('return')
 
     def is_test(self):
-        return 'test=True' in self.full_ret_obj()['fun_args']
+        nargs, kwargs = self.job_args()
+        return 'test=True' in kwargs
 
     def is_error(self):
         return '_error' in self.full_ret_obj() or isinstance(self.full_ret_obj()['return'], str) or isinstance(self.full_ret_obj()['return'], list)
@@ -65,6 +66,20 @@ class Return(Base):
             else:
                 return True
 
+    def is_success(self):
+        if self.is_error():
+            return False
+
+        if self.is_state():
+            for state, state_ret in self.ret().items():
+                if state_ret['result'] == False:
+                    return False
+            return True
+        else:
+            if 'retcode' in self.full_ret_obj():
+                return self.full_ret_obj().get('retcode') == 0
+            else:
+                return None
 
     def user(self):
         return self.job.load_obj().get('user')
