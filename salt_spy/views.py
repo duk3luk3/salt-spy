@@ -12,7 +12,7 @@ def dashboard():
     returns = db.session.query(Return).filter(Return.fun.in_(['state.apply', 'state.highstate'])).all()
     minions = Minion.from_returns(returns)
 
-    minions_sorted = sorted(minions.values(), key=lambda m: m.apply_age())
+    minions_sorted = sorted(minions.values(), key=lambda m: m.apply_age() or sys.maxsize)
 
     return render_template('hello.html', minions=minions_sorted, nav='dashboard')
 
