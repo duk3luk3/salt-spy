@@ -12,7 +12,7 @@
           {% for minion in minions%}
           {% set last_apply = minion.last_apply() %}
           {% set age = minion.apply_age() %}
-          {% set apply_color = ' bg-danger' if not age or age > 30 else ' bg-warning' if age > 14 else '' %}
+          {% set apply_color = ' bg-danger' if (age is none or age > 30) else ' bg-warning' if age > 14 else '' %}
           <div class="row border p-2 mb-1{% if not last_apply or last_apply.is_test() %} text-muted{% endif %}">
             <div class="col-md-2">{{minion.mid}}</div>
             {%if last_apply %}
