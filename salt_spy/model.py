@@ -50,7 +50,7 @@ class Return(Base):
         return 'test=True' in kwargs
 
     def is_error(self):
-        return '_error' in self.full_ret_obj() or isinstance(self.full_ret_obj().get('return'), str) or isinstance(self.full_ret_obj().get('return']), list)
+        return '_error' in self.full_ret_obj() or isinstance(self.full_ret_obj().get('return'), str) or isinstance(self.full_ret_obj().get('return'), list)
 
     def is_state(self):
         return not self.is_error() and self.fun.startswith('state.')
