@@ -84,6 +84,9 @@ class Return(Base):
     def user(self):
         return self.job.load_obj().get('user')
 
+    def minion_id(self):
+        return self.full_ret_obj().get('id')
+
     def sls(self):
         if self.is_state():
             ret = []

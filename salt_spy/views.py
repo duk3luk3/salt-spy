@@ -26,11 +26,17 @@ def minions():
     print(len(minions), file=sys.stderr)
     return render_template('minions.html', minions=minions_sorted, nav='minions')
 
-@app.route('/states')
-def states():
+@app.route('/runs')
+def runs():
     states = db.session.query(Return).order_by(Return.date.desc()).all()
 
-    return render_template('states.html', states=states, nav='states')
+    return render_template('runs.html', states=states, nav='runs')
+
+@app.route('/jobs')
+def jobs():
+    jobs = db.session.query(Job).order_by(Job.jid.desc()).all()
+
+    return render_template('jobs.html', jobs=jobs, nav='jobs')
 
 @app.route('/health')
 def health():

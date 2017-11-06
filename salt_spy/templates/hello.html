@@ -16,7 +16,7 @@
           <div class="row border p-2 mb-1{% if not last_apply or last_apply.is_test() %} text-muted{% endif %}">
             <div class="col-md-2">{{minion.mid}}</div>
             {%if last_apply %}
-            <div class="col-md-1"><a href="{{ url_for('states')}}#state-{{last_apply.rid}}">Job {{last_apply.rid}}</a></div>
+            <div class="col-md-1"><a href="{{ url_for('runs')}}#state-{{last_apply.rid}}">Job {{last_apply.rid}}</a></div>
             <div class="col-md-3{{apply_color}}">{{age}} days</div>
             <div class="col-md-3">{{last_apply.job.jid }}</div>
             {% else %}

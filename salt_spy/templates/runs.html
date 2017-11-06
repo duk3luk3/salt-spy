@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}States List{% endblock %}
+{% block title %}Runs List{% endblock %}
 {% macro state_meta(state) %}
 {% set success = state.is_success() %}
 {% set test = state.is_test() %}
@@ -20,7 +20,7 @@
 {% endmacro %}
 {% block content %}
       <div>
-        <h2>States List</h2>
+        <h2>Runs List</h2>
             <div class="row">
               <div class="col-md-1"><strong>id</strong></div>
               <div class="col-md-2"><strong>fun</strong></div>

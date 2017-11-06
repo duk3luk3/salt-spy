@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}Jobs List{% endblock %}
+{% block content %}
+      <div>
+        <h2>Jobs List</h2>
+            <div class="row">
+              <div class="col-md-2"><strong>jid</strong></div>
+              <div class="col-md-10"><strong>load</strong></div>
+            </div>
+            {% for job in jobs %}
+            <div class="row">
+              <div class="col-md-2">{{job.jid}}</div>
+              <div class="col-md-10">
+                <div class="row">
+                  <div class="col-md-2">
+                  Full Ret
+                  </div>
+                  <div class="col-md-10">
+                  <ul>
+                  {% for k,value in job.load_obj().items() recursive %}
+                  <li>{{k}}
+                    {%if value is mapping %}
+                    <ul>{{ loop(value.items())}}</ul>
+                    {% elif value is iterable and not value is string %}
+                    : {{value|join(', ')}}
+                    {% else %}
+                    : {{value}}
+                    {%endif%}
+                  </li>
+                  {% endfor %}
+                  </ul>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-2">
+                  Runs
+                  </div>
+                  <div class="col-md-10">
+                  <ul>
+                  {% for ret in job.returns %}
+                  <li><a href="{{ url_for('runs')}}#state-{{ret.rid}}">Run {{ret.rid}}</a> ({{ret.minion_id()}})</li>
+                  {% endfor %}
+                  </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+            {% endfor %}
+      </div>
+{% endblock %}

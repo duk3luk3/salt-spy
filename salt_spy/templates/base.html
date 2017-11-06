@@ -34,15 +34,18 @@
         <ul class="navbar-nav mr-auto">
           {{ r_nav('dashboard', 'Home') }}
           {{ r_nav('minions', 'Minions') }}
-          {{ r_nav('states', 'States') }}
+          {{ r_nav('jobs', 'Jobs') }}
+          {{ r_nav('runs', 'Runs') }}
           <li class="nav-item{% if nav == 'health' %} active{% endif %}">
             <a class="nav-link" href="{{ url_for('health')}}">Health {{ '[' + num_alerts + ' Alerts]' if num_alerts is defined else '[0 Alerts]' }}</a>
           </li>
         </ul>
+	<!--
         <form class="form-inline my-2 my-lg-0">
           <input class="form-control mr-sm-2" placeholder="Search" aria-label="Search" type="text">
           <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
         </form>
+	-->
       </div>
     </nav>
 
