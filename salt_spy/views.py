@@ -23,7 +23,7 @@ def minions():
 
     minions_sorted = natsorted(minions.values(), key=lambda m: m.mid)
 
-    print(len(minions), file=sys.stderr)
+    #print(len(minions), file=sys.stderr)
     return render_template('minions.html', minions=minions_sorted, nav='minions')
 
 @app.route('/runs')
