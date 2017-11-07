@@ -39,6 +39,22 @@ def jobs():
 
     return render_template('jobs.html', jobs=jobs, nav='jobs')
 
+@app.route('/update_cal')
+def update_cal():
+    returns = db.session.query(Return).all()
+    minions = Minion.from_returns(returns)
+
+    days = {}
+
+    for minion in minions.values():
+        day = minion.update_day()
+        if day:
+            if not day in days:
+                days[day] = []
+            days[day].append(minion.mid)
+
+    return render_template('update_cal.html', days=days)
+
 @app.route('/health')
 def health():
     return redirect(url_for('minions'))
