@@ -8,6 +8,7 @@
             <div class="col-md-1"><strong>Job</strong></div>
             <div class="col-md-3"><strong>Last apply</strong></div>
             <div class="col-md-3"><strong>JID</strong></div>
+            <div class="col-md-2"><strong>Unattended Upgrade Day</strong></div>
           </div>
           {% for minion in minions%}
           {% set last_apply = minion.last_apply() %}
@@ -24,6 +25,7 @@
             <div class="col-md-3{{apply_color}}">-- days</div>
             <div class="col-md-3">--</div>
             {% endif %}
+            <div class="col-md-2">{{ minion.update_day() }}</div>
           </div>
           {% endfor %}
       </div>

@@ -9,7 +9,8 @@ import sys
 
 @app.route('/')
 def dashboard():
-    returns = db.session.query(Return).filter(Return.fun.in_(['state.apply', 'state.highstate'])).all()
+#    returns = db.session.query(Return).filter(Return.fun.in_(['state.apply', 'state.highstate'])).all()
+    returns = db.session.query(Return).all()
     minions = Minion.from_returns(returns)
 
     minions_sorted = sorted(minions.values(), key=lambda m: m.apply_age() if m.apply_age() is not None else sys.maxsize)

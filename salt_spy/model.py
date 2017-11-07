@@ -3,6 +3,9 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
 import json
 from datetime import datetime
+import re
+import sys
+
 
 Base = declarative_base()
 
@@ -107,6 +110,7 @@ class Return(Base):
             'function': function,
             'name': val.get('name', function_comps[1]),
             'sls': val.get('__sls__'),
+            'changes': val.get('changes'),
             'result': val['result'],
             'comment': val['comment']
             }
@@ -151,6 +155,27 @@ class Minion:
             return highstates[0]
         else:
             return None
+
+    DAILYRE = re.compile('.*/daily(\d{2}).*')
+
+    def update_day(self):
+#        print('Checking minion:', self.mid, file=sys.stderr)
+        for r in reversed(self.returns):
+            if r.is_state() and not r.is_test():
+#                print('Checking run:', r.rid, file=sys.stderr)
+                args, kwargs = r.job_args()
+#                print(args, kwargs, file=sys.stderr)
+                if len(args) > 0 and (args[0] == 'unattended' or args[0] == 'mirrorlist'):
+                    states = [state for state in r.states() if (state['function'] == 'file.managed' and state['name'] == '/etc/apt/sources.list')]
+                    if len(states) > 0 and states[0]['changes']:
+                        if 'diff' in states[0]['changes']:
+                            adds = [line for line in states[0]['changes']['diff'].split('\n') if line.startswith('+')]
+#                            print(adds, file=sys.stderr)
+                            for add in adds:
+                                m = self.DAILYRE.match(add)
+                                if m:
+#                                    print(m, file=sys.stderr)
+                                    return int(m.groups()[0])
 
     def apply_age(self):
         last_apply = self.last_apply()
