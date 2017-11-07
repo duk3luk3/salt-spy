@@ -36,6 +36,7 @@
           {{ r_nav('minions', 'Minions') }}
           {{ r_nav('jobs', 'Jobs') }}
           {{ r_nav('runs', 'Runs') }}
+          {{ r_nav('update_cal', 'Update Calendar') }}
           <li class="nav-item{% if nav == 'health' %} active{% endif %}">
             <a class="nav-link" href="{{ url_for('health')}}">Health {{ '[' + num_alerts + ' Alerts]' if num_alerts is defined else '[0 Alerts]' }}</a>
           </li>

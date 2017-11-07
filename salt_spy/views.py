@@ -5,6 +5,7 @@ from natsort import natsorted
 from . import app, data, config, db
 from .model import Job, Return, Minion
 import sys
+from datetime import date
 
 
 @app.route('/')
@@ -53,7 +54,11 @@ def update_cal():
                 days[day] = []
             days[day].append(minion.mid)
 
-    return render_template('update_cal.html', days=days)
+    today = date.today()
+
+    print(today.day, file=sys.stderr)
+
+    return render_template('update_cal.html', days=days, today=today.day)
 
 @app.route('/health')
 def health():
