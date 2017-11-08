@@ -159,22 +159,21 @@ class Minion:
     DAILYRE = re.compile('.*/daily(\d{2}).*')
 
     def update_day(self):
-#        print('Checking minion:', self.mid, file=sys.stderr)
+        """
+        Finds the scheduled update day based on the most recent 'unattended'
+        state execution that changed the day
+        """
         for r in reversed(self.returns):
             if r.is_state() and not r.is_test():
-#                print('Checking run:', r.rid, file=sys.stderr)
                 args, kwargs = r.job_args()
-#                print(args, kwargs, file=sys.stderr)
                 if len(args) > 0 and (args[0] == 'unattended' or args[0] == 'mirrorlist'):
                     states = [state for state in r.states() if (state['function'] == 'file.managed' and state['name'] == '/etc/apt/sources.list')]
                     if len(states) > 0 and states[0]['changes']:
                         if 'diff' in states[0]['changes']:
                             adds = [line for line in states[0]['changes']['diff'].split('\n') if line.startswith('+')]
-#                            print(adds, file=sys.stderr)
                             for add in adds:
                                 m = self.DAILYRE.match(add)
                                 if m:
-#                                    print(m, file=sys.stderr)
                                     return int(m.groups()[0])
 
     def apply_age(self):

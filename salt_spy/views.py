@@ -2,10 +2,9 @@ from flask import Flask, render_template, redirect, url_for, g
 from natsort import natsorted
 #from sqlalchemy import create_engine
 #from sqlalchemy.orm import sessionmaker
-from . import app, data, config, db
+from . import app, data, config, db, utils
 from .model import Job, Return, Minion
 import sys
-from datetime import date
 
 
 @app.route('/')
@@ -54,11 +53,9 @@ def update_cal():
                 days[day] = []
             days[day].append(minion.mid)
 
-    today = date.today()
+    today, this_month, next_month = utils.get_calendar()
 
-    print(today.day, file=sys.stderr)
-
-    return render_template('update_cal.html', days=days, today=today.day)
+    return render_template('update_cal.html', days=days, today=today, this_month=this_month, next_month=next_month)
 
 @app.route('/health')
 def health():
