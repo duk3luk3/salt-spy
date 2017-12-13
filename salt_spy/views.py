@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, url_for, g
+from flask import Flask, render_template, redirect, url_for, g, request
 from natsort import natsorted
 #from sqlalchemy import create_engine
 #from sqlalchemy.orm import sessionmaker
@@ -17,11 +17,34 @@ def dashboard():
 
     return render_template('hello.html', minions=minions_sorted, nav='dashboard')
 
+
+def render_collection(cls, name, order_by):
+    id_ = request.args.get('id')
+    if id_:
+        ids = id_.split(',')
+        pk = cls.__mapper__.primary_key[0]
+        data = db.session.query(cls).filter(pk.in_(ids)).order_by(order_by).all()
+    else:
+        data = db.session.query(cls).order_by(order_by).all()
+
+    kwargs = {
+            'nav': name,
+            name: data
+            }
+
+    return render_template(name+'.html', **kwargs)
+
+
 @app.route('/minions')
 def minions():
-    returns = db.session.query(Return).all()
-    minions = Minion.from_returns(returns)
+    id_ = request.args.get('id')
+    if id_:
+        ids = id_.split(',')
+        returns = db.session.query(Return).filter(Return.mid.in_(ids)).all()
+    else:
+        returns = db.session.query(Return).all()
 
+    minions = Minion.from_returns(returns)
     minions_sorted = natsorted(minions.values(), key=lambda m: m.mid)
 
     #print(len(minions), file=sys.stderr)
@@ -29,15 +52,21 @@ def minions():
 
 @app.route('/runs')
 def runs():
-    states = db.session.query(Return).order_by(Return.date.desc()).all()
-
-    return render_template('runs.html', states=states, nav='runs')
+    return render_collection(Return, 'runs', Return.date.desc())
+#    id_ = request.args.get('id')
+#    if id_:
+#        states = [db.session.query(Return).get(id_)]
+#    else:
+#        states = db.session.query(Return).order_by(Return.date.desc()).all()
+#
+#    return render_template('runs.html', states=states, nav='runs')
 
 @app.route('/jobs')
 def jobs():
-    jobs = db.session.query(Job).order_by(Job.jid.desc()).all()
-
-    return render_template('jobs.html', jobs=jobs, nav='jobs')
+    return render_collection(Job, 'jobs', Job.jid.desc())
+#    jobs = db.session.query(Job).order_by(Job.jid.desc()).all()
+#
+#    return render_template('jobs.html', jobs=jobs, nav='jobs')
 
 @app.route('/update_cal')
 def update_cal():

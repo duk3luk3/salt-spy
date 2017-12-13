@@ -28,7 +28,7 @@
               <div class="col-md-2"><strong>jid</strong></div>
               <div class="col-md-2"><strong>date</strong></div>
             </div>
-            {% for state in states %}
+            {% for state in runs %}
               {{ state_header(state) }}
             <div class="row collapse mt-1 mb-1 pl-1" id="{{state.rid}}-collapse">
               <div class="col-md-12">

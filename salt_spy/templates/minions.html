@@ -3,7 +3,9 @@
 {% block content %}
       <div>
         <h2>Minions Overview</h2>
-          There are {{minions|count}} minions.
+        {% if minions|count > 1 %}
+          {{minions|count}} minions.
+        {% endif %}
           {% for minion in minions%}
           <div class="row border p-2 mb-1">
             <div class="col-md-12">

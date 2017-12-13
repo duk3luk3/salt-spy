@@ -36,6 +36,9 @@
                   Runs
                   </div>
                   <div class="col-md-10">
+                      {% if job.returns|count > 1 %}
+                      <a href="{{ url_for('runs')}}?id={{job.returns|map(attribute='rid')|join(',')}}">All runs</a></br />
+                      {% endif %}
                   <ul>
                   {% for ret in job.returns %}
                   <li><a href="{{ url_for('runs')}}#state-{{ret.rid}}">Run {{ret.rid}}</a> ({{ret.minion_id()}})</li>

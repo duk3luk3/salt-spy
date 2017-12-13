@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% macro minion(tgt) %}
-<a href="{{url_for('minions')}}#minion-{{tgt}}">{{tgt}}</a>
+<a href="{{url_for('minions')}}?id={{tgt}}">{{tgt}}</a>
 {% endmacro %}
 {% macro month(month, update_days, today) %}
 {% for week in month %}
