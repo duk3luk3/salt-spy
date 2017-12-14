@@ -20,7 +20,7 @@ def dashboard():
 
 def render_collection(cls, name, order_by):
     id_ = request.args.get('id')
-    limit = request.args.get('limit', default=10, type=int)
+    limit = request.args.get('limit', default=config.config.LIMIT, type=int)
     if id_:
         ids = id_.split(',')
         pk = cls.__mapper__.primary_key[0]

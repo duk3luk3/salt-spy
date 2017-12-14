@@ -12,6 +12,7 @@ class SpyConfig:
 
 config = SpyConfig(
     LOGFILE='/var/log/salt-ssh.log',
-    DB='/srv/salt-spy/db.sqlite'
+    DB='/srv/salt-spy/db.sqlite',
+    LIMIT=50
 )
 
