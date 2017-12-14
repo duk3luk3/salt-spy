@@ -96,6 +96,5 @@ def health():
 
 @app.route('/run/detail/<int:run_id>')
 def run_details(run_id):
-    db = get_db()
-    run = db.query(StateRun).filter(StateRun.run_id == run_id).one()
+    run = db.session.query(StateRun).filter(StateRun.run_id == run_id).one()
     return render_template('run_detail.html', run=run, nav='run_details')
