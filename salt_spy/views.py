@@ -20,10 +20,13 @@ def dashboard():
 
 def render_collection(cls, name, order_by):
     id_ = request.args.get('id')
+    limit = request.args.get('limit', default=10, type=int)
     if id_:
         ids = id_.split(',')
         pk = cls.__mapper__.primary_key[0]
         data = db.session.query(cls).filter(pk.in_(ids)).order_by(order_by).all()
+    elif limit:
+        data = db.session.query(cls).order_by(order_by).limit(limit).all()
     else:
         data = db.session.query(cls).order_by(order_by).all()
 
